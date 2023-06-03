@@ -93,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ? AppInfo.phantom.androidId
                             : AppInfo.phantom.iosId;
                     if (Theme.of(context).platform == TargetPlatform.iOS) {
-                      launchUrlString('https://phantom.app/');
+                      launchUrlString('https://apps.apple.com/app/$appId');
                     } else if (Theme.of(context).platform ==
                         TargetPlatform.android) {
                       launchUrlString('market://details?id=$appId');
