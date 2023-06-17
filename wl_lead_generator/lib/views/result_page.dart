@@ -31,15 +31,16 @@ class ResultPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Result'),
+        title: const Text('Back to Home'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              'Status Code: $statusCode',
-            ),
+            if (statusCode == 200)
+              Text(
+                'Congratulations: ${this.firstName} ${this.firstName}!! You are now connected to New Sacred',
+              ),
             Text(
               'First Name: $firstName',
             ),
@@ -69,6 +70,9 @@ class ResultPage extends StatelessWidget {
               value: optedIn,
               onChanged: null,
             ),
+            if (statusCode != 200)
+              Text(
+                  'Could not connect to the wallet or server. Give it another try! Status code: $statusCode'),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(

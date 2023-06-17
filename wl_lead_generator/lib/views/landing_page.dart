@@ -97,6 +97,100 @@ class LandingPageState extends State<LandingPage> {
     );
   }
 
+  Future<Map<String, dynamic>> _showOptOutDialog() async {
+    return showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (BuildContext context) {
+        bool optInLocal = _optIn;
+        String twitterHandleLocal = _twitterHandle ?? '';
+        String discordHandleLocal = _discordHandle ?? '';
+
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Opt Out Warning'),
+              content: Column(
+                children: [
+                  const Text(
+                      'Are you sure you do not want to miss out on those awesome updates that gives you access to exclusive New Sacred merchandise and opportunities to participate in events that benefits you'),
+                  const Text('To opt in, please fill BOTH fields.'),
+                  TextFormField(
+                    initialValue: _twitterHandle,
+                    decoration:
+                        const InputDecoration(labelText: 'Twitter Handle'),
+                    onChanged: (value) {
+                      twitterHandleLocal = value;
+                    },
+                    validator: (value) {
+                      if (optInLocal == true &&
+                          (value == null || value.isEmpty)) {
+                        return 'Please enter your twitter handle';
+                      }
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    initialValue: _discordHandle,
+                    decoration: const InputDecoration(labelText: 'Discord ID'),
+                    onChanged: (value) {
+                      discordHandleLocal = value;
+                    },
+                    validator: (value) {
+                      if (optInLocal == true &&
+                          (value == null || value.isEmpty)) {
+                        return 'Please enter your discord ID';
+                      }
+                      return null;
+                    },
+                  ),
+                  CheckboxListTile(
+                    title: const Text("Opt-in for updates."),
+                    value: optInLocal,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        optInLocal = value ?? false;
+                      });
+                    },
+                    controlAffinity: ListTileControlAffinity.leading,
+                  ),
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: const Text('Submit'),
+                  onPressed: () {
+                    Navigator.of(context).pop({
+                      'optIn': false,
+                      'twitterHandle': twitterHandleLocal,
+                      'discordHandle': discordHandleLocal,
+                    });
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+    ).then((value) {
+      if (value != null) {
+        setState(() {
+          _optIn =
+              (value['twitterHandle'] != null && value['discordHandle'] != null)
+                  ? value['optIn']
+                  : false;
+        });
+        handleSubmit();
+      }
+      return value ?? {};
+    });
+  }
+
   // submit data
   Future<int> submitData() async {
     const url =
@@ -136,7 +230,36 @@ class LandingPageState extends State<LandingPage> {
       // Error occurred while submitting data
       print('Error submitting data. Status code: ${response.statusCode}');
     }
+
     return response.statusCode;
+  }
+
+  Future<void> handleSubmit() async {
+    submitData().then((value) {
+      _formKey.currentState!.reset();
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ResultPage(
+            statusCode: value,
+            firstName: _firstName!,
+            lastName: _lastName!, // replace with actual value
+            email: _email!,
+            countryCode: _countryCode,
+            mobileNumber: _mobileNumber,
+            twitterHandle: _twitterHandle,
+            discordHandle: _discordHandle,
+            optedIn: _optIn,
+            walletAddress: walletAddress!,
+          ),
+        ),
+      );
+    }).catchError((error) {
+      debugPrint('Error: ${error.toString()}');
+      setState(() {
+        capturedError = error.toString();
+      });
+    });
   }
 
   Object? output;
@@ -152,7 +275,7 @@ class LandingPageState extends State<LandingPage> {
       appBar: AppBar(
         title: const Text('Lead Generator Application'),
         flexibleSpace: Align(
-          alignment: Alignment.centerLeft,
+          alignment: Alignment.center,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -160,8 +283,8 @@ class LandingPageState extends State<LandingPage> {
                 padding: const EdgeInsets.only(bottom: 5.0),
                 child: Image.asset(
                   'assets/logo/logo.png', // Replace with your own logo asset
-                  height: 40.0,
-                  width: 40.0,
+                  height: 50.0,
+                  width: 50.0,
                 ),
               ),
             ],
@@ -216,14 +339,14 @@ class LandingPageState extends State<LandingPage> {
                     }
                     return null;
                   },
-                  onFieldSubmitted: (value) {
-                    // This callback is triggered when the user submits or finishes editing the field
-                    // You can perform additional validation or other actions here
-                    if (_formKey.currentState!.validate()) {
-                      // Field is valid, proceed with the desired action
-                      // json post
-                    }
-                  },
+                  // onFieldSubmitted: (value) {
+                  //   // This callback is triggered when the user submits or finishes editing the field
+                  // You can perform additional validation or other actions here
+                  //   if (_formKey.currentState!.validate()) {
+                  //     // Field is valid, proceed with the desired action
+
+                  //   }
+                  // },
                 ),
                 PhoneFormField(
                     key: const Key('phone-field'),
@@ -311,31 +434,13 @@ class LandingPageState extends State<LandingPage> {
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
                         _formKey.currentState!.save();
-                        submitData().then((value) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ResultPage(
-                                statusCode: value,
-                                firstName: _firstName!,
-                                lastName:
-                                    _lastName!, // replace with actual value
-                                email: _email!,
-                                countryCode: _countryCode,
-                                mobileNumber: _mobileNumber,
-                                twitterHandle: _twitterHandle,
-                                discordHandle: _discordHandle,
-                                optedIn: _optIn,
-                                walletAddress: walletAddress!,
-                              ),
-                            ),
-                          );
-                        }).catchError((error) {
-                          debugPrint('Error: ${error.toString()}');
-                          setState(() {
-                            capturedError = error.toString();
-                          });
-                        });
+                        if (!_optIn) {
+                          await _showOptOutDialog();
+                          // The modal will handle it from here
+                          return;
+                        }
+
+                        handleSubmit();
                       }
                     },
                     child: const Text('Submit Lead'),
