@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:solana_wallet_adapter/solana_wallet_adapter.dart';
 import 'package:wl_lead_generator/widgets/countdown.dart';
-import 'package:wl_lead_generator/widgets/error_box.dart';
+import 'package:wl_lead_generator/widgets/message_box.dart';
 import 'result_page.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:phone_form_field/phone_form_field.dart';
@@ -194,8 +194,8 @@ class LandingPageState extends State<LandingPage> {
   // submit data
   Future<int> submitData() async {
     const url =
-        'https://us-west2-continual-mind-388823.cloudfunctions.net/user'; // Replace with your API endpoint
-    // const url = "http://localhost:8080/user";
+        'https://us-west2-continual-mind-388823.cloudfunctions.net/user';
+    // const url = "http://localhost:3000/user";
     // Create a map of the data to be sent
     final data = {
       'firstName': _firstName,
@@ -448,8 +448,9 @@ class LandingPageState extends State<LandingPage> {
                 if (_output != null) Text('Address: $_capturedAddress'),
                 const CountDown(),
                 if (capturedError != null)
-                  ErrorBox(
-                      errorMessage: capturedError,
+                  MessageBox(
+                      type: MessageType.Error,
+                      message: capturedError,
                       onClose: () {
                         setState(() {
                           capturedError = null;

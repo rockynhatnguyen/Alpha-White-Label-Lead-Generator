@@ -1,14 +1,39 @@
 import 'package:flutter/material.dart';
 
-class ErrorBox extends StatelessWidget {
-  final String errorMessage;
+enum MessageType {
+  Error,
+  Success,
+}
+
+class MessageBox extends StatelessWidget {
+  final String message;
+  final MessageType type;
   final VoidCallback onClose;
 
-  const ErrorBox({
+  const MessageBox({
     Key? key,
-    required this.errorMessage,
+    required this.message,
+    required this.type,
     required this.onClose,
   }) : super(key: key);
+
+  Color _getColor() {
+    switch (type) {
+      case MessageType.Error:
+        return Colors.red;
+      case MessageType.Success:
+        return Colors.green;
+    }
+  }
+
+  IconData _getIcon() {
+    switch (type) {
+      case MessageType.Error:
+        return Icons.error;
+      case MessageType.Success:
+        return Icons.check_circle;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,20 +42,20 @@ class ErrorBox extends StatelessWidget {
       left: 0,
       child: Container(
         width: MediaQuery.of(context).size.width,
-        color: Colors.red,
+        color: _getColor(),
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
             Expanded(
               child: Text(
-                errorMessage,
+                message,
                 style: const TextStyle(color: Colors.white),
               ),
             ),
             GestureDetector(
               onTap: onClose,
-              child: const Icon(
-                Icons.close,
+              child: Icon(
+                _getIcon(),
                 color: Colors.white,
               ),
             ),
