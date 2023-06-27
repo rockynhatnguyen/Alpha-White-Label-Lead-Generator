@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:wl_lead_generator/utils.dart';
+
 class CountDown extends StatefulWidget {
   const CountDown({Key? key}) : super(key: key);
 
@@ -28,8 +30,7 @@ class CountDownState extends State<CountDown> {
 
   Future<void> fetchTargetDateTime() async {
     // Make an HTTP GET request to fetch the target date and time
-    final response = await http.get(Uri.parse(
-        'https://us-central1-continual-mind-388823.cloudfunctions.net/get-date'));
+    final response = await http.get(Uri.parse(Utils.getDateEndpoint()));
 
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
@@ -56,7 +57,7 @@ class CountDownState extends State<CountDown> {
   String getRemainingTime() {
     final now = DateTime.now().toUtc();
     final difference = targetDateTime?.difference(now);
-    if (difference == null) return '';
+    if (difference == null) return 'Fetching...';
 
     if (difference.isNegative) {
       timer?.cancel();
@@ -72,12 +73,12 @@ class CountDownState extends State<CountDown> {
     String timeText = '';
 
     if (days > 0) {
-      timeText += 'Days: $days | ';
+      timeText += '$days : ';
     }
 
-    timeText += 'Hours: ${hours.toString()} | ';
-    timeText += 'Minutes: ${minutes.toString()} | ';
-    timeText += 'Seconds: ${seconds.toString()}';
+    timeText += '${hours.toString().padLeft(2, '0')} : ';
+    timeText += '${minutes.toString().padLeft(2, '0')} : ';
+    timeText += '${seconds.toString().padLeft(2, '0')}';
 
     return timeText;
   }
@@ -88,13 +89,50 @@ class CountDownState extends State<CountDown> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Text(
-          'Countdown:',
-          style: TextStyle(fontSize: 24),
+          'Countdown for NFT Drop',
+          style: TextStyle(
+              color: Colors.white, fontSize: 40, fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 16),
-        Text(
-          getRemainingTime(),
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        const SizedBox(height: 28),
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.8),
+              width: 1,
+            ),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.grey[900]!,
+                Colors.black,
+              ],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.white.withOpacity(0.4),
+                spreadRadius: 4, // Increase the spread radius
+                blurRadius: 7,
+                offset: const Offset(0, 0),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                Text(
+                  getRemainingTime(),
+                  style: const TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ],
     );

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 enum MessageType {
-  Error,
-  Success,
+  error,
+  success,
 }
 
 class MessageBox extends StatelessWidget {
@@ -19,18 +19,18 @@ class MessageBox extends StatelessWidget {
 
   Color _getColor() {
     switch (type) {
-      case MessageType.Error:
+      case MessageType.error:
         return Colors.red;
-      case MessageType.Success:
+      case MessageType.success:
         return Colors.green;
     }
   }
 
   IconData _getIcon() {
     switch (type) {
-      case MessageType.Error:
+      case MessageType.error:
         return Icons.error;
-      case MessageType.Success:
+      case MessageType.success:
         return Icons.check_circle;
     }
   }
