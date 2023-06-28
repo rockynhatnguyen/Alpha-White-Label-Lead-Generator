@@ -267,23 +267,25 @@ class ResultPageState extends State<ResultPage> {
                               const SizedBox(height: 10),
                               if (_optedIn)
                                 _buildFormField(
-                                    hintText: 'Twitter Handle',
-                                    labelText: 'Twitter Handle',
+                                    hintText: 'Discord Handle',
+                                    labelText: 'Discord Handle',
+                                    initialValue: _discordHandle ?? '',
                                     isRequired: true,
                                     onChanged: (value) {
                                       setState(() {
-                                        _twitterHandle = value;
+                                        _discordHandle = value;
                                       });
                                     }),
                               const SizedBox(height: 10),
                               if (_optedIn)
                                 _buildFormField(
-                                    hintText: 'Discord Handle',
-                                    labelText: 'Discord Handle',
+                                    hintText: 'Twitter Handle',
+                                    labelText: 'Twitter Handle',
+                                    initialValue: _twitterHandle ?? '',
                                     isRequired: true,
                                     onChanged: (value) {
                                       setState(() {
-                                        _discordHandle = value;
+                                        _twitterHandle = value;
                                       });
                                     }),
                               const SizedBox(height: 10),
@@ -296,7 +298,7 @@ class ResultPageState extends State<ResultPage> {
                                     fixedSize: const Size(200, 50),
                                   ),
                                   child: const Text(
-                                    'Submit Opt In',
+                                    'Resubmit Opt In',
                                     style: TextStyle(
                                       fontWeight: FontWeight.w800,
                                       color: Colors.white,
@@ -347,6 +349,7 @@ class ResultPageState extends State<ResultPage> {
   Widget _buildFormField({
     required hintText,
     required String labelText,
+    required String initialValue,
     bool isRequired = false,
     ValueChanged<String>? onChanged,
     FormFieldSetter<String>? onSaved,
@@ -387,6 +390,7 @@ class ResultPageState extends State<ResultPage> {
             onChanged: onChanged,
             onSaved: onSaved,
             validator: validator,
+            initialValue: initialValue,
           ),
         ),
       ],

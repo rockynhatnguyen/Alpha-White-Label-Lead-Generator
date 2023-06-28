@@ -6,7 +6,8 @@ import 'package:wl_lead_generator/utils.dart';
 import 'package:wl_lead_generator/widgets/countdown.dart';
 import 'package:wl_lead_generator/widgets/message_box.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import 'package:phone_form_field/phone_form_field.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+
 import 'result_page.dart';
 
 class FormPage extends StatefulWidget {
@@ -360,29 +361,68 @@ class FormPageState extends State<FormPage> {
                       },
                     ),
                     const SizedBox(height: 18.0),
-                    PhoneFormField(
-                      key: const Key('phone-field'),
-                      decoration: InputDecoration(
-                        labelText: 'Mobile Number',
-                        enabledBorder: OutlineInputBorder(
-                          borderSide:
-                              const BorderSide(color: Colors.transparent),
-                          borderRadius: BorderRadius.circular(8.0),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Mobile Number',
+                          style: TextStyle(
+                            color: Colors.white60,
+                            fontSize: 16.0,
+                          ),
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.white),
-                          borderRadius: BorderRadius.circular(8.0),
+                        InternationalPhoneNumberInput(
+                          key: const Key('phone-field'),
+                          validator: (value) {
+                            return null;
+                          },
+                          onInputChanged: (PhoneNumber phoneNumber) {
+                            _countryCode = phoneNumber.dialCode;
+                            _mobileNumber = phoneNumber.parseNumber();
+                          },
+                          selectorConfig: const SelectorConfig(
+                            selectorType: PhoneInputSelectorType.DIALOG,
+                          ),
+                          inputDecoration: InputDecoration(
+                            fillColor: const Color(0xFF1E293B),
+                            filled: true,
+                            labelText: 'Enter your mobile number',
+                            enabledBorder: OutlineInputBorder(
+                              borderSide:
+                                  const BorderSide(color: Colors.transparent),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            labelStyle: const TextStyle(
+                                color: Colors.white60, fontSize: 16.0),
+                          ),
+                          initialValue: PhoneNumber(isoCode: 'US'),
+                          cursorColor: Colors.purpleAccent,
+                          textStyle: const TextStyle(color: Colors.white54),
+                          selectorTextStyle:
+                              const TextStyle(color: Colors.white60),
+                          formatInput: true,
+                          keyboardType: TextInputType.phone,
                         ),
-                        labelStyle: const TextStyle(
-                            color: Colors.white60, fontSize: 16.0),
-                      ),
-                      defaultCountry: IsoCode.US,
-                      showDialCode: true,
-                      style: const TextStyle(color: Colors.white),
-                      cursorColor: Colors.purpleAccent,
-                      onChanged: (phone) {
-                        _mobileNumber = phone?.countryCode;
-                        debugPrint('debug:$phone');
+                      ],
+                    ),
+                    const SizedBox(height: 18.0),
+                    buildFormField(
+                      labelText: 'Discord Handle',
+                      hintText: 'Enter your Discord Handle',
+                      isRequired: _optIn,
+                      onChanged: (value) {
+                        _discordHandle = value;
+                      },
+                      validator: (value) {
+                        if (_optIn == true &&
+                            (value == null || value.isEmpty)) {
+                          return 'Please enter your Discord handle';
+                        }
+                        return null;
                       },
                     ),
                     const SizedBox(height: 18.0),
@@ -397,22 +437,6 @@ class FormPageState extends State<FormPage> {
                         if (_optIn == true &&
                             (value == null || value.isEmpty)) {
                           return 'Please enter your Twitter handle';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 18.0),
-                    buildFormField(
-                      labelText: 'Discord Handle',
-                      hintText: 'Enter your Discord Handle',
-                      isRequired: _optIn,
-                      onChanged: (value) {
-                        _discordHandle = value;
-                      },
-                      validator: (value) {
-                        if (_optIn == true &&
-                            (value == null || value.isEmpty)) {
-                          return 'Please enter your Discord handle';
                         }
                         return null;
                       },
@@ -435,7 +459,7 @@ class FormPageState extends State<FormPage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('',
+                        const Text('',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 16.0,
@@ -546,11 +570,13 @@ class FormPageState extends State<FormPage> {
             decoration: InputDecoration(
               hintText: hintText,
               hintStyle: const TextStyle(color: Colors.white54),
-              enabledBorder: const OutlineInputBorder(
-                borderSide: BorderSide.none,
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.transparent),
+                borderRadius: BorderRadius.circular(8.0),
               ),
-              focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide.none,
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.white),
+                borderRadius: BorderRadius.circular(8.0),
               ),
             ),
             style: const TextStyle(color: Colors.white60),
